@@ -9,6 +9,7 @@ from scipy.optimize import LinearConstraint, minimize
 
 def adjust_prob_mat(prob_mat: ndarray,
                     weights: ndarray = None,
+                    x0: ndarray = None,
                     rtol: float = 1e-4,
                     atol: float = 1e-4,
                     options: Dict = None) -> ndarray:
@@ -43,7 +44,8 @@ def adjust_prob_mat(prob_mat: ndarray,
     def hessian(x: ndarray) -> ndarray:
         return (A.T*w).dot(A)
 
-    x0 = np.ones(size)/size
+    if x0 is None:
+        x0 = np.ones(size)/size
     bounds = np.hstack([np.zeros((size, 1)), np.ones((size, 1))])
     constraints = [LinearConstraint(np.ones((1, size)), np.ones(1), np.ones(1))]
 
@@ -67,4 +69,4 @@ def adjust_prob_mat(prob_mat: ndarray,
             for j in range(i, ndim):
                 adjusted_prob_mat[i, j] = adjusted_b[k]
                 k += 1
-    return adjusted_prob_mat
+    return adjusted_prob_mat, x
